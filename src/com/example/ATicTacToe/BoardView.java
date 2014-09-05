@@ -8,7 +8,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.util.AttributeSet;
+import android.util.EventLog;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * Created by yngvi on 1.9.2014.
@@ -102,4 +106,17 @@ public class BoardView extends View {
         }
     }
 
+    @Override
+    public boolean onTouchEvent( MotionEvent event ) {
+
+        int x = (int)event.getX();   // NOTE: getHistoricX()
+        int y = (int)event.getY();
+
+        if ( event.getAction() == MotionEvent.ACTION_DOWN ) {
+            String str = "(" + x + "," + y + ")";
+            Toast.makeText( getContext(), str, Toast.LENGTH_SHORT ).show();
+            Log.d("BoardView", str);
+        }
+        return true;
+    }
 }

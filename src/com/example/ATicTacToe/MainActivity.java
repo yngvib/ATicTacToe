@@ -22,6 +22,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        if ( savedInstanceState != null ) {
+            String state = savedInstanceState.getString( "stateTTT" );
+            m_ttt.set( state );
+        }
         m_boardView = (BoardView) findViewById(R.id.board);
         m_boardView.setBoard( m_ttt.toString() );
 
@@ -59,6 +63,12 @@ public class MainActivity extends Activity {
                 Toast.makeText(getApplicationContext(), "Game over!", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState( Bundle saveInstanceState ) {
+        super.onSaveInstanceState( saveInstanceState );
+        saveInstanceState.putString("stateTTT", m_ttt.toString() );
     }
 
 }

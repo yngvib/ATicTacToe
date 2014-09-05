@@ -15,14 +15,20 @@ import android.view.View;
  */
 public class BoardView extends View {
 
+    private final int NUM_CELLS = 3;
+
     private Paint m_paint = new Paint();
+    private Paint m_paintGrid = new Paint();
     private ShapeDrawable m_shape = new ShapeDrawable( new OvalShape() );
     private Rect m_rect = new Rect();
 
     private int m_cellSize;
+    private String m_board = "x....xo..";
 
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        m_paintGrid.setStyle(Paint.Style.STROKE);
+        m_paintGrid.setColor( Color.GRAY );
     }
 
     @Override
@@ -34,20 +40,64 @@ public class BoardView extends View {
 
     @Override
     protected void onSizeChanged( int xNew, int yNew, int xOld, int yOld) {
-        m_cellSize =  xNew / 3;
+        m_cellSize =  xNew / NUM_CELLS;
+    }
+
+    private int xToCol( int x ) {
+        return x / m_cellSize;
+    }
+
+    private int yToRow( int y ) {
+        return y / m_cellSize;
+    }
+
+    private int colToX( int col ){
+        return col * m_cellSize;
+    }
+
+    private int rowToY( int row ){
+        return row * m_cellSize;
+    }
+
+    public boolean setBoard( String board ) {
+        if ( board.length() == NUM_CELLS * NUM_CELLS) {
+            m_board = board;
+        }
+        return false;
+    }
+
+    public char getBoard( int col, int row ) {
+        return m_board.charAt(col + row * NUM_CELLS);
     }
 
     @Override
     protected void onDraw( Canvas canvas ) {
 
-        for ( int r=0; r<3; ++r ) {
-            for (int c = 0; c < 3; ++c) {
-                int x = c * m_cellSize;
-                int y = r * m_cellSize;
+        for ( int r=0; r<NUM_CELLS; ++r ) {
+            for (int c = 0; c<NUM_CELLS; ++c) {
+                int x = colToX( c );
+                int y = rowToY( r );
                 m_rect.set(x, y, x + m_cellSize, y + m_cellSize);
+                canvas.drawRect( m_rect, m_paintGrid );
+            }
+        }
+
+        for ( int r=0; r<NUM_CELLS; ++r ) {
+            for (int c = 0; c<NUM_CELLS; ++c) {
+                int x = colToX( c );
+                int y = rowToY( r );
+                m_rect.set(x, y, x + m_cellSize, y + m_cellSize);
+                m_rect.inset( m_cellSize / 10, m_cellSize / 10 );
                 m_shape.setBounds(m_rect);
-                m_shape.getPaint().setColor(Color.RED);
-                m_shape.draw(canvas);
+                char ch = getBoard( c, r );
+                if ( ch == 'x' ) {
+                    m_shape.getPaint().setColor(Color.RED);
+                    m_shape.draw(canvas);
+                }
+                else if ( ch == 'o' ) {
+                    m_shape.getPaint().setColor(Color.BLUE);
+                    m_shape.draw(canvas);
+                }
             }
         }
     }

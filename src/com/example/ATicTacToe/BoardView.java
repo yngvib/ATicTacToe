@@ -28,6 +28,7 @@ public class BoardView extends View {
 
     private int m_cellSize;
     private String m_board = "x....xo..";
+    private OnMoveEventHandler m_handler = null;
 
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -66,12 +67,17 @@ public class BoardView extends View {
     public boolean setBoard( String board ) {
         if ( board.length() == NUM_CELLS * NUM_CELLS) {
             m_board = board;
+            invalidate();
         }
         return false;
     }
 
     public char getBoard( int col, int row ) {
         return m_board.charAt(col + row * NUM_CELLS);
+    }
+
+    public void setMoveHandler( OnMoveEventHandler handler ) {
+        m_handler = handler;
     }
 
     @Override
@@ -113,9 +119,11 @@ public class BoardView extends View {
         int y = (int)event.getY();
 
         if ( event.getAction() == MotionEvent.ACTION_DOWN ) {
-            String str = "(" + x + "," + y + ")";
-            Toast.makeText( getContext(), str, Toast.LENGTH_SHORT ).show();
-            Log.d("BoardView", str);
+            int c = xToCol( x );
+            int r = yToRow( y );
+            if ( m_handler != null ) {
+                m_handler.onMove(c, r);
+            }
         }
         return true;
     }
